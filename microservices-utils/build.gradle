@@ -1,0 +1,24 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+
+jar {
+    baseName = 'microservices-utils'
+    version = '1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compile ("org.springframework.boot:spring-boot-starter-web:1.3.5.RELEASE")
+    compile ("ch.qos.logback:logback-classic:1.1.6")
+}
+
