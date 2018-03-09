@@ -1,0 +1,15 @@
+version: '2'
+
+services: 
+  discoveryServer:
+    image: microservices/discovery-server:1.0
+    ports:
+      - "5432:5432"
+    volumes:
+      - /tmp:/tmp
+  msServer:
+    image: microservices/microservice-server:1.0
+    ports:
+      - "5432:5432"
+    volumes:
+      - /tmp:/tmp

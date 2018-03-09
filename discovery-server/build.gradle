@@ -6,11 +6,13 @@ buildscript {
 		classpath ("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 		classpath ("io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE")
 		classpath ("org.springframework.cloud:spring-cloud-netflix:1.3.1.RELEASE")
+		classpath("se.transmode.gradle:gradle-docker:1.2")
         }
 }
 
 apply plugin: 'spring-boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'docker'
 
 jar {
     baseName = 'discovery-server'
@@ -34,3 +36,18 @@ dependencies {
     compile ("ch.qos.logback:logback-classic:1.1.6")
 }
 
+task buildDocker(type: Docker, dependsOn: build) {
+    push = false
+    //tag = jar.baseName
+    applicationName = jar.baseName
+    tagVersion = jar.version
+    addFile("build/libs/${jar.baseName}-${jar.version}.jar", "app.jar")
+    dockerfile = file('src/main/docker/Dockerfile')
+    
+   doLast{
+        exec {
+            executable "sh"
+            args "-c","docker save -o ./build/libs/${jar.baseName}-docker.tar 'microservices/${jar.baseName}'"
+        }
+    }
+}

@@ -24,7 +24,7 @@ public class RestClientMicroService {
     @Autowired
     DiscoveryClient client;
 
-    @Scheduled( fixedRate = 5000 )
+    @Scheduled( fixedRate = 10000 )
     public void getInvoked() {
         LOGGER.info( "0;getMicroResponse method invoked" );
         try {
