@@ -4,6 +4,7 @@ buildscript {
     }
 }
 
+hello
 apply plugin: 'base'
 apply plugin: 'java'
 
