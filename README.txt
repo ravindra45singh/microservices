@@ -1,6 +1,6 @@
 Poc : Microservices in Springboot 
 
-Steps to run :
+Steps to run(also docker is avaiavle to run applications) :
 
 For Discovery Service
 
