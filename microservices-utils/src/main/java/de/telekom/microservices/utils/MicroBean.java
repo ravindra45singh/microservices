@@ -2,50 +2,63 @@ package de.telekom.microservices.utils;
 
 public class MicroBean {
 
-    private int id;
-    private String date;
-    private String host;
-    private String serviceId;
-    private int port;
+	private int id;
+	private String date;
+	private String host;
+	private String serviceId;
+	private int port;
 
-    public String getHost() {
-        return host;
-    }
+	public MicroBean(int id, String date, String host, String serviceId, int port) {
+		super();
+		this.id = id;
+		this.date = date;
+		this.host = host;
+		this.serviceId = serviceId;
+		this.port = port;
+	}
 
-    public void setHost( String host ) {
-        this.host = host;
-    }
+	public MicroBean() {
 
-    public String getServiceId() {
-        return serviceId;
-    }
+	}
 
-    public void setServiceId( String serviceId ) {
-        this.serviceId = serviceId;
-    }
+	public String getHost() {
+		return host;
+	}
 
-    public int getPort() {
-        return port;
-    }
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-    public void setPort( int port ) {
-        this.port = port;
-    }
+	public String getServiceId() {
+		return serviceId;
+	}
 
-    public int getId() {
-        return id;
-    }
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
+	}
 
-    public void setId( int id ) {
-        this.id = id;
-    }
+	public int getPort() {
+		return port;
+	}
 
-    public String getDate() {
-        return date;
-    }
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-    public void setDate( String date ) {
-        this.date = date;
-    }
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
 
 }

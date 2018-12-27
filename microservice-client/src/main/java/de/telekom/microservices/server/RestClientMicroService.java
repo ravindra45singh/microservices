@@ -15,45 +15,60 @@ import org.springframework.cloud.client.loadbalancer.*;
 @Component
 public class RestClientMicroService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( RestClientMicroService.class );
+	private static final Logger LOGGER = LoggerFactory.getLogger(RestClientMicroService.class);
 
-    @Autowired
-    protected RestTemplate restTemplate;
-    
-    @Autowired
+	@Autowired
+	protected RestTemplate restTemplate;
+
+	@Autowired
 	private LoadBalancerClient loadBalancer;
 
-    public static final String URL = "http://MICROSERVICE-SERVER/getMicroResponse/{id}";
+	public static final String URL = "http://MICROSERVICE-SERVER/getMicroResponse/{id}";
 
-    
+	@Autowired
+	protected MicroserviceServerProxy proxy;
 
-    @Scheduled( fixedRate = 10000 )
-    public void getInvoked() {
-        LOGGER.info( "0;getMicroResponse method invoked" );
-        
-        String serviceId=null;
-        
-        ServiceInstance serviceInstance=loadBalancer.choose("microservice-server");
-        System.out.println(serviceInstance.getServiceId()+ ","+serviceInstance.getUri());
-        serviceId=serviceInstance.getServiceId().toString();
-        
-        String baseUrl=URL;
-        if(serviceId!=null)
-        	baseUrl  = "http://"+serviceId+"/getMicroResponse/{id}";
-         	
-        
-        LOGGER.info( "0;baseUrl: {}", baseUrl);
-        
-        try {
-            MicroBean res = restTemplate.getForObject( baseUrl, MicroBean.class, DateTime.now() );
+	// calling microservice-server via RestTemplate(with load balancer)
+	//@Scheduled(fixedRate = 10000)
+	public void getInvokedViaRest() {
+		LOGGER.info("0;getInvokedViaRest method invoked");
 
-            LOGGER.info( "0;Request received in {}:{}:{} at {} ", res.getServiceId(), res.getHost(),
-                    res.getPort(), res.getDate() );
-            LOGGER.info( "0;Response received in Microservice Client at {} ", DateTime.now().toString() );
-        } catch ( RestClientException ex ) {
-            LOGGER.info( "0;RestClientException ---> {}", ex.getMessage() );
-        }
+		String serviceId = null;
 
-    }
+		ServiceInstance serviceInstance = loadBalancer.choose("microservice-server");
+		System.out.println(serviceInstance.getServiceId() + "," + serviceInstance.getUri());
+		serviceId = serviceInstance.getServiceId().toString();
+
+		String baseUrl = URL;
+		if (serviceId != null)
+			baseUrl = "http://" + serviceId + "/getMicroResponse/{id}";
+
+		LOGGER.info("0;baseUrl: {}", baseUrl);
+
+		try {
+			MicroBean res = restTemplate.getForObject(baseUrl, MicroBean.class, DateTime.now());
+
+			LOGGER.info("0;Request received in {}:{}:{} at {} ", res.getServiceId(), res.getHost(), res.getPort(),
+					res.getDate());
+			LOGGER.info("0;Response received in Microservice Client at {} ", DateTime.now().toString());
+		} catch (RestClientException ex) {
+			LOGGER.info("0;RestClientException ---> {}", ex.getMessage());
+		}
+
+	}
+
+	// calling microservice-server via Feign client
+	@Scheduled(fixedRate = 6000)
+	public void getInvokedViaFeign() {
+		LOGGER.info("0;getInvokedViaFeign method invoked");
+
+		MicroBean res = proxy.getService(DateTime.now().toString());
+		System.out.println("ServiceId: "+res.getServiceId());
+		System.out.println("Port: "+res.getPort());
+		LOGGER.info("0;Request received in {}:{}:{} at {} ", res.getServiceId(), res.getHost(), res.getPort(),
+				res.getDate());
+		LOGGER.info("0;Response received in Microservice Client at {} ", DateTime.now().toString());
+
+	}
 
 }
