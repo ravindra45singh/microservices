@@ -8,9 +8,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import de.telekom.microservices.utils.MicroBean;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.*;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 
 @Component
 public class RestClientMicroService {
@@ -22,6 +24,9 @@ public class RestClientMicroService {
 
 	@Autowired
 	private LoadBalancerClient loadBalancer;
+	
+	@Autowired
+	DiscoveryClient discoveryClient;
 
 	public static final String URL = "http://MICROSERVICE-SERVER/getMicroResponse/{id}";
 
@@ -58,7 +63,7 @@ public class RestClientMicroService {
 	}
 
 	// calling microservice-server via Feign client
-	@Scheduled(fixedRate = 6000)
+	//@Scheduled(fixedRate = 6000)
 	public void getInvokedViaFeign() {
 		LOGGER.info("0;getInvokedViaFeign method invoked");
 
@@ -69,6 +74,28 @@ public class RestClientMicroService {
 				res.getDate());
 		LOGGER.info("0;Response received in Microservice Client at {} ", DateTime.now().toString());
 
+	}
+	
+	//calling microservice-server via Zuul Api
+	@Scheduled(fixedRate = 6000)
+	public void getInvokedViaZuulApi() {	
+		ServiceInstance serviceInstance = loadBalancer.choose("microservice-zuul");
+		System.out.println(serviceInstance.getServiceId() + "," + serviceInstance.getUri());
+		String serviceId = serviceInstance.getServiceId().toString();
+		
+		String baseUrl = "http://" + serviceId + "/MicroServiceServer/getMicroResponse/{id}";
+		System.out.println("baseUrl:"+baseUrl);
+		
+		
+		try {
+			MicroBean res = restTemplate.getForObject(baseUrl, MicroBean.class, DateTime.now());
+
+
+			LOGGER.info("0;Request received in {}:{}:{} at {} ", res.getServiceId(), res.getHost(), res.getPort(),res.getDate());
+			LOGGER.info("0;Response received in Microservice Client at {} ", DateTime.now().toString());
+		} catch (RestClientException ex) {
+			LOGGER.info("0;RestClientException ---> {}", ex.getMessage());
+		}
 	}
 
 }
